@@ -71,7 +71,7 @@ def processData():
                 signal_electrodes[index] = [value]
             #print(f"Index : {index}, Value : {value}")
 
-        #break  # TODO: remove this later
+        break  # TODO: remove this later
    # print(signal_electrodes)
 
 
@@ -114,7 +114,9 @@ def storeData():
     df4['C30'] = signal_electrodes['T1']
     df4['C31'] = signal_electrodes['T2']
 
-    df4.to_csv("csv/output.csv")
+    global name
+    path = os.path.basename(os.path.normpath(name))
+    df4.to_csv("csv/"+path+".csv")
 
 
 if __name__ == "__main__":
