@@ -3,11 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import os
+import time
 
+def readFile(name):
 
-def readFile():
-    pd.read_csv(
-        'D:/archive/data_eeg_age_v1/data2kaggle/eval/00000647_s002_t000.csv', skiprows=1)
+    print("READING FILE " + name)
+
+    df = pd.read_csv(
+        name, skiprows=1)
 
     # Drop last 4 columns
     df.drop(columns=df.columns[-4:],
@@ -48,78 +51,79 @@ def readFile():
         'EEG T1-REF': 'T1',
         'EEG T2-REF': 'T2'
     }
+
+    print("READING FILE COMPLETED ")
+
     return df.rename(columns=name)
 
 
 def processData():
-  # P2=[]
-  # P2_1=[]
-  # if df2[b]=="F3":
-  #     F3.append(df1[b])
-  #     F3_1.append(df2[b])
-  print(1)
+    global signal_electrodes
+
+    # row layer
+    for index, row in df.iterrows():
+
+        # column layer
+        for (index, value) in row.iteritems():
+            if(index in signal_electrodes):
+                signal_electrodes[index].append(value)
+            else:
+                signal_electrodes[index] = [value]
+            #print(f"Index : {index}, Value : {value}")
+
+        #break  # TODO: remove this later
+   # print(signal_electrodes)
 
 
 def storeData():
-  print("check")
+    global signal_electrodes
 
-  df4 = pd.DataFrame([])
-  df4['C'] = FP1
-  df4['C1'] = FP2
-  df4['C2'] = F7
-  df4['C3'] = F8
-  print("check1")
+    print("check")
 
-  df4['C4'] = AF1
-  df4['C5'] = AF2
-  df4['C6'] = FZ1
-  df4['C7'] = F4
-  df4['C8'] = F3
-  df4['C9'] = FC6
-  df4['C10'] = FC5
-  df4['C11'] = FC2
-  df4['C12'] = FC1
-  df4['C13'] = T8
-  df4['C14'] = T7
-  df4['C15'] = CZ
-  df4['C16'] = C3
-  df4['C17'] = C4
-  df4['C18'] = CP5
-  df4['C19'] = CP6
-  df4['C20'] = CP1
-  df4['C21'] = CP2
-  df4['C22'] = P3
-  print("check2")
+    df4 = pd.DataFrame([])
+    df4['C'] = signal_electrodes['FP1']
+    df4['C1'] = signal_electrodes['FP2']
+    df4['C2'] = signal_electrodes['F3']
+    df4['C3'] = signal_electrodes['F4']
+    df4['C4'] = signal_electrodes['C3']
+    df4['C5'] = signal_electrodes['C4']
+    df4['C6'] = signal_electrodes['P3']
+    df4['C7'] = signal_electrodes['P4']
+    df4['C8'] = signal_electrodes['O1']
+    df4['C9'] = signal_electrodes['O2']
+    df4['C10'] = signal_electrodes['F7']
+    df4['C11'] = signal_electrodes['F8']
+    df4['C12'] = signal_electrodes['T3']
+    df4['C13'] = signal_electrodes['T4']
+    df4['C14'] = signal_electrodes['T5']
+    df4['C15'] = signal_electrodes['T6']
+    df4['C16'] = signal_electrodes['A1']
+    df4['C17'] = signal_electrodes['A2']
+    df4['C18'] = signal_electrodes['FZ']
+    df4['C19'] = signal_electrodes['CZ']
+    df4['C20'] = signal_electrodes['PZ']
+    df4['C21'] = signal_electrodes['ROC']
+    df4['C22'] = signal_electrodes['LOC']
+    df4['C23'] = signal_electrodes['EKG1']
+    df4['C24'] = signal_electrodes['EMG']
+    df4['C25'] = signal_electrodes['26']
+    df4['C26'] = signal_electrodes['27']
+    df4['C27'] = signal_electrodes['28']
+    df4['C28'] = signal_electrodes['29']
+    df4['C29'] = signal_electrodes['30']
+    df4['C30'] = signal_electrodes['T1']
+    df4['C31'] = signal_electrodes['T2']
 
-  #df4['C1'] = z
-  df4['C23'] = P4
-  df4['C24'] = PZ
-  df4['C25'] = P8
-  df4['C26'] = P7
-  df4['C27'] = PO2
-  df4['C28'] = PO1
-  df4['C29'] = O2
-  df4['C30'] = O1
-  df4['C31'] = X
+    df4.to_csv("csv/output.csv")
 
-  print(df4)
-
-
-  df4.to_csv("output.csv")
 
 if __name__ == "__main__":
-    signal_electrode = []
-    df = readFile()
+    start_time = time.time()
 
-    #df1=df["sensor value"] - eeg signal
-    #df2=df["sensor position"] - index
+    signal_electrodes = {}
+    name = 'D:/archive/data_eeg_age_v1/data2kaggle/eval/00000647_s002_t000.csv'
+    df = readFile(name)
 
-
-    for index, row in df.iterrows():
-        print(index)
-        print(row)
-
-        if(index == 10):
-            break
     processData()
-    exit()
+    storeData()
+    print("--- %s seconds ---" % (time.time() - start_time))
