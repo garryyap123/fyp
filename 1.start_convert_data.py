@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import os
+from os import walk
 import time
 
 def readFile(name):
@@ -123,9 +124,20 @@ if __name__ == "__main__":
     start_time = time.time()
 
     signal_electrodes = {}
-    name = 'D:/archive/data_eeg_age_v1/data2kaggle/eval/00000647_s002_t000.csv'
-    df = readFile(name)
 
-    processData()
-    storeData()
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # put your folder path here
+    name = '/Users/franklee/fyp/raw_csv'
+
+
+    filepaths = []
+    for (dirpath, dirnames, filenames) in walk(name):
+        for name in filenames:
+            filepaths.append(dirpath + '/' + name)
+        break
+
+    for i in filepaths:
+        df = readFile(i)
+        print(i)
+        processData()
+        storeData()
+        print("--- %s seconds ---" % (time.time() - start_time))
