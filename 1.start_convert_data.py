@@ -18,7 +18,7 @@ def readFile(name):
             inplace=True)
 
     name = {
-        'EEG FP1-REF': 'FP1',
+        '# EEG FP1-REF': 'FP1',
         'EEG FP2-REF': 'FP2',
         'EEG F3-REF': 'F3',
         'EEG F4-REF': 'F4',
