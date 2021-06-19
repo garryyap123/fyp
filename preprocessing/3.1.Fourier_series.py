@@ -5,35 +5,52 @@ import scipy.fftpack
 import sys
 import matplotlib.pyplot as plotter
 
-df = pd.read_csv('C:/Users/ygh19/Documents/age69.csv')
+df = pd.read_csv('C:/Users/ygh19/Downloads/3.eeg_recognation-master/3.eeg_recognation-master/csv/00000647_s002_t000.csv')
 
-df1=df["sensor value"]
-df2=df["sensor position"]
+mapping = { 'C' : 'FP1',
+   'C1' : 'FP2',
+   'C2' : 'F3',
+   'C3' : 'F4',
+   'C4' : 'C3',
+   'C5' : 'C4',
+   'C6' : 'P3',
+   'C7' : 'P4',
+   'C8' : 'O1',
+   'C9' : 'O2',
+   'C10' : 'F7',
+   'C11' : 'F8',
+   'C12' : 'T3',
+   'C13' : 'T4',
+   'C14' : 'T5',
+   'C15' : 'T6',
+   'C16' : 'A1',
+   'C17' : 'A2',
+   'C18' : 'FZ',
+   'C19' : 'CZ',
+   'C20' : 'PZ',
+   'C21' : 'ROC',
+   'C22' : 'LOC',
+   'C23' : 'EKG1',
+   'C24' : 'EMG',
+   'C25' : '26',
+   'C26' : '27',
+   'C27' : '28',
+   'C28' : '29',
+   'C29' : '30',
+   'C30' : 'T1',
+   'C31' : 'T2'
+  }
 
-
-FP1=[]
-FP1_1=[]
-FP2=[]
-FP2_1=[]
-s=[]
-a=1
-for b in range (1,460):
- if df2[b]=="FP1":
-  FP1.append(df1[b])
-  FP1_1.append(df2[b])
- if df2[b]=="FP2":
-  FP2.append(df1[b])
-  FP2_1.append(df2[b])
-  s.append(b)
-plotter.plot(FP2)
-
-sys.exit()
-
+FP1   = df.loc[:,'C'].tolist()
+FP2   = df.loc[:,'C1'].tolist()
+FP1_1 = df.iloc[:,0].tolist()
+FP2_1 = FP1_1
 
 # Python example - Fourier transform using numpy.fft method
 
 # How many time points are needed i,e., Sampling Frequency
-samplingFrequency   = 204;
+
+samplingFrequency   = 300500;
 # At what intervals time points are sampled
 samplingInterval = 1 / samplingFrequency;
 # Begin time period of the signals
