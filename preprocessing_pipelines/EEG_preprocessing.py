@@ -28,11 +28,11 @@ def str2int(x):
         return x
 def find_outliers(X, threshold=3.0, max_iter=2):
     """Find outliers based on iterated Z-scoring.
- 
+
     This procedure compares the absolute z-score against the threshold.
     After excluding local outliers, the comparison is repeated until no
     local outlier is present any more.
-    
+
     ########ATTENTION ATTENTION ATTENTION#####
     # This function if removed from MNE-python code base
 
@@ -44,7 +44,7 @@ def find_outliers(X, threshold=3.0, max_iter=2):
         The value above which a feature is classified as outlier.
     max_iter : int
         The maximum number of iterations.
- 
+
     Returns
     -------
     bad_idx : np.ndarray of int, shape (n_features)
@@ -59,7 +59,7 @@ def find_outliers(X, threshold=3.0, max_iter=2):
         my_mask = np.max([my_mask, local_bad], 0)
         if not np.any(local_bad):
             break
- 
+
     bad_idx = np.where(my_mask)[0]
     return bad_idx
 def hurst(x):
@@ -101,7 +101,7 @@ def _freqs_power(data, sfreq, freqs):
 
 def faster_bad_channels(epochs, picks=None, thres=3, use_metrics=None):
     """Implements the first step of the FASTER algorithm.
-    
+
     This function attempts to automatically mark bad EEG channels by performing
     outlier detection. It operated on epoched data, to make sure only relevant
     data is analyzed.
@@ -161,7 +161,7 @@ def _deviation(data):
     """Computes the deviation from mean for each channel in a set of epochs.
     This is not implemented as a lambda function, because the channel means
     should be cached during the computation.
-    
+
     Parameters
     ----------
     data : 3D numpy array
@@ -176,7 +176,7 @@ def _deviation(data):
 
 def faster_bad_epochs(epochs, picks=None, thres=3, use_metrics=None):
     """Implements the second step of the FASTER algorithm.
-    
+
     This function attempts to automatically mark bad epochs by performing
     outlier detection.
     Parameters
@@ -234,7 +234,7 @@ def _power_gradient(ica, source_data):
 
 def faster_bad_components(ica, epochs, thres=3, use_metrics=None):
     """Implements the third step of the FASTER algorithm.
-    
+
     This function attempts to automatically mark bad ICA components by
     performing outlier detection.
     Parameters
@@ -293,7 +293,7 @@ def faster_bad_components(ica, epochs, thres=3, use_metrics=None):
 
 def faster_bad_channels_in_epochs(epochs, picks=None, thres=3, use_metrics=None):
     """Implements the fourth step of the FASTER algorithm.
-    
+
     This function attempts to automatically mark bad channels in each epochs by
     performing outlier detection.
     Parameters
@@ -330,7 +330,7 @@ def faster_bad_channels_in_epochs(epochs, picks=None, thres=3, use_metrics=None)
     if use_metrics is None:
         use_metrics = metrics.keys()
 
-    
+
     data = epochs.get_data()[:, picks, :]
 
     bads = [[] for i in range(len(epochs))]
@@ -344,7 +344,7 @@ def faster_bad_channels_in_epochs(epochs, picks=None, thres=3, use_metrics=None)
     for i, b in enumerate(bads):
         if len(b) > 0:
             bads[i] = np.unique(np.concatenate(b)).tolist()
-            
+
     return bads
 
 def _check_bad_channels(_epochs,picks,func = faster_bad_channels):
@@ -379,10 +379,10 @@ class PreprocessingPipeline(object):
         the baseline for defining the Epochs
     interpolate_bad_channels : bool, default = True
         whether to perform bad channels interpolation
-    
+
     Examples
     -----
-    >>> # first we initialize the pipeline as a data container
+     # first we initialize the pipeline as a data container
     >>> pipeline        = PreprocessingPipeline(raw,
     >>>                                         events,
     >>>                                         event_id,
@@ -421,33 +421,33 @@ class PreprocessingPipeline(object):
                  ):
         super(PreprocessingPipeline,).__init__()
         np.random.seed(12345)
-        
+
         self.raw                            = raw
         self.events                         = events
         self.event_id                       = event_id
-        
+
         self.notch_filter                   = notch_filter
-        
+
         self.highpass                       = highpass
         self.lowpass                        = lowpass
         self.highpass_ICA                   = highpass_ICA
-        
+
         self.tmin                           = tmin
         self.tmax                           = tmax
         self.baseline                       = baseline
-        
+
         self.perform_ICA                    = perform_ICA
-        
+
         self.interpolate_bad_channels       = interpolate_bad_channels
     """
     necessary step: re-reference - explicitly
     """
     def re_refernce(self,):
         self.raw_ref ,_  = mne.set_eeg_reference(self.raw,
-                                                 ref_channels     = 'average',
-                                                 projection       = True,)
+                                                 [],
+                                                 )
         self.raw_ref.apply_proj() # it might tell you it already has been re-referenced, but do it anyway
-    
+
     """
     necessary step: notch filtering
     """
@@ -464,14 +464,14 @@ class PreprocessingPipeline(object):
         # for wire artifacts and their oscillations
         self.raw_ref.notch_filter(np.arange(notch_filter,241,notch_filter),
                                   picks = picks)
-    
+
     """
     optional step: highpass, lowpass, bandpass filtering
     """
     def filtering(self,):
         lowpass = self.lowpass
         highpass = self.highpass
-        
+
         if np.logical_and(highpass is not None,lowpass is not None):
             self.raw_ref = self.raw_ref.filter(highpass,lowpass)
         else:
@@ -479,7 +479,7 @@ class PreprocessingPipeline(object):
                 self.raw_ref = self.raw_ref.filter(None,lowpass,)
             elif highpass is not None:
                 self.raw_ref = self.raw_ref.filter(highpass,None)
-        
+
         self.raw_ref_for_ICA = self.raw_ref.copy().filter(self.highpass_ICA,lowpass)
     """
     necessary step: epoching the raw, not-filtered data
@@ -498,7 +498,8 @@ class PreprocessingPipeline(object):
                                       baseline    = self.baseline, # range of time for computing the mean references for each channel and subtract these values from all the time points per channel
                                       picks       = picks,
                                       detrend     = detrend, # linear detrend
-                                      preload     = preload # must be true if we want to do further processing
+                                      preload     = preload, # must be true if we want to do further processing
+                                      verbose     = 10
                                       )
         self.epochs_for_ICA = mne.Epochs(self.raw_ref_for_ICA,
                                          self.events,    # numpy array
@@ -513,8 +514,8 @@ class PreprocessingPipeline(object):
     """
     optional step: mark bad channels, interpolate them in necessary
     """
-    
-    
+
+
     def mark_bad_channels(self,
                           check_epochs = True,
                           check_epochs_for_ICA = True,
@@ -562,8 +563,8 @@ class PreprocessingPipeline(object):
                 self.epochs,picks,func = faster_bad_channels_in_epochs)
         if self.interpolate_bad_channels:
             self.epochs.interpolate_bads()
-        
-        
+
+
     """
     half necessary half optional step: ICA fitting, ##### Not applying the ICA yet #####
     """
@@ -647,11 +648,3 @@ class PreprocessingPipeline(object):
     """
     def final_step(self,):
         self.clearn_epochs = self.epochs_ica.copy().pick_types(eeg = True, eog = False)
-
-
-
-
-
-
-
-
