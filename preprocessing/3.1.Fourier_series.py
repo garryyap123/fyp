@@ -5,7 +5,7 @@ import scipy.fftpack
 import sys
 import matplotlib.pyplot as plotter
 
-df = pd.read_csv('C:/Users/ygh19/Downloads/3.eeg_recognation-master/3.eeg_recognation-master/csv/00000647_s002_t000.csv')
+df = pd.read_csv('C:/Users/ygh19/Downloads/3.eeg_recognation-master/3.eeg_recognation-master/csv/00000039_s005_t000.csv')
 
 mapping = { 'C' : 'FP1',
    'C1' : 'FP2',
@@ -56,7 +56,7 @@ samplingInterval = 1 / samplingFrequency;
 # Begin time period of the signals
 beginTime           = 0;
 # End time period of the signals
-endTime             = 1; 
+endTime             = 1;
 # Frequency of the signals
 signal1Frequency     = 4;
 signal2Frequency     = 7;
