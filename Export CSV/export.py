@@ -1,4 +1,3 @@
-from scipy.signal import medfilt
 import pandas as pd
 import numpy as np
 import mne
