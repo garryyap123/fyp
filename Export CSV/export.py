@@ -3,17 +3,24 @@ import numpy as np
 import mne
 import os
 
-data_path = '/Users/franklee/fyp/Preprocessed data/malee23.set'  # change here only
-raw =  mne.io.read_raw_eeglab(input_fname=data_path, preload=True, verbose=True)
 
-filename = os.path.basename(data_path)
+directory = r'/Users/franklee/fyp/Preprocessed data'
 
-columns = raw.info['ch_names']
-data = np.rot90(raw.get_data()).tolist()
+for filename in os.listdir(directory):
+    if filename.endswith(".set"):
+        data_path = os.path.join(directory, filename)
+        raw =  mne.io.read_raw_eeglab(input_fname=data_path, preload=True, verbose=True)
 
-os.chdir('csv')
-path = os.path.join(os.getcwd(), filename);
-pre, ext = os.path.splitext(path)
+        columns = raw.info['ch_names']
+        data = np.rot90(raw.get_data()).tolist()
 
-export_path = pre + '.csv'
-pd.DataFrame(data, columns=columns).to_csv(export_path, index=False);
+        if(os.path.isdir('./csv')):
+            os.chdir('csv')
+
+        path = os.path.join(os.getcwd(), filename);
+        pre, ext = os.path.splitext(path)
+
+        export_path = pre + '.csv'
+        pd.DataFrame(data, columns=columns).to_csv(export_path, index=False);
+    else:
+        continue
